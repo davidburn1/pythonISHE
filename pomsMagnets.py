@@ -37,7 +37,7 @@ class vmag():
 			self.positiveField = True
 			self.setFieldAngleRaw(self.theta, self.phi)
 			
-		print "Field: %3.1f mT" % field
+		#print "Field: %3.1f mT" % field
 					
 		field = field / 1000.0				#assume specified in mT rather than Tesla 
 		cmd='setField %(v1)10.4f 600000000\n\r' %{'v1': abs(field)};
