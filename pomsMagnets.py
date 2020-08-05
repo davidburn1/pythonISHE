@@ -15,11 +15,6 @@ class vmag():
 		
 		self.name = "field"
 		
-		time.sleep(1)
-		self.setAngle(0,0)
-		self.setField(0)
-		
-		
 	def setAngle(self, theta, phi):
 		self.theta = theta
 		self.phi = phi
@@ -30,16 +25,15 @@ class vmag():
 		cmd='setFieldDirection %(v1)10.2f %(v2)10.2f\n\r' % {'v1': theta, 'v2': phi}
 		self.send(cmd)
 		
-	def setField(self,field):
-		self.moveTo(field)
+
 	
-	def moveTo(self, field):
+	def asynchronousMoveTo(self, field):
 		if (field < 0.0) and self.positiveField:
-			print "change field direction"
+			#print "change field direction"
 			self.positiveField = False
 			self.setFieldAngleRaw(-self.theta, (self.phi+180)%360)
 		if (field > 0.0) and not self.positiveField:
-			print "change field direction back"
+			#print "change field direction back"
 			self.positiveField = True
 			self.setFieldAngleRaw(self.theta, self.phi)
 			
@@ -48,7 +42,13 @@ class vmag():
 		field = field / 1000.0				#assume specified in mT rather than Tesla 
 		cmd='setField %(v1)10.4f 600000000\n\r' %{'v1': abs(field)};
 		self.send(cmd)
+
+	def moveTo(self,field):
+		self.asynchronousMoveTo(field)
 		time.sleep(2)						# wait for field to adjust
+
+	def setField(self,field):
+		self.moveTo(field)
 		
 	def send(self, cmd):
 		attempts = 0
