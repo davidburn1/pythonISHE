@@ -5,8 +5,8 @@ class vmag():
 	def __init__(self, host="127.0.0.1", port=4042):
 		self.host = host
 		self.port = port
-		self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		self.sock.connect((self.host, self.port))
+		self.connect()
+
 		#self.sock.send(str.encode("*IDN?\n"))
 		#print self.sock.recv(2056)
 		self.theta = 0
@@ -14,6 +14,36 @@ class vmag():
 		self.positiveField = True
 		
 		self.name = "field"
+
+	def connect(self):
+		self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		self.sock.connect((self.host, self.port))
+
+
+	def send(self, cmd):
+		attempts = 0
+		while (attempts < 5):
+			try:
+				self.sock.send(cmd) 
+				reply = self.sock.recv(1024)
+				if reply == "OK": break
+				print "Magnet field set error:" + reply
+			except:
+				self.sock.close()
+				time.sleep(2)
+				self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+				self.sock.connect((self.host, self.port))
+				print "socket re opened"
+				time.sleep(2)
+			attempts = attempts + 1
+		
+		if (attempts == 5):
+			raise RuntimeError("socket connection broken")
+
+
+
+
+
 		
 	def setAngle(self, theta, phi):
 		self.theta = theta
@@ -45,27 +75,11 @@ class vmag():
 
 	def moveTo(self,field):
 		self.asynchronousMoveTo(field)
-		time.sleep(2)						# wait for field to adjust
+		time.sleep(0.5)						# wait for field to adjust
 
 	def setField(self,field):
 		self.moveTo(field)
 		
-	def send(self, cmd):
-		attempts = 0
-		while (attempts < 3):
-			try:
-				self.sock.send(cmd) 
-				reply = self.sock.recv(1024)
-				if reply == "OK": break
-				print "Magnet field set error:" + reply
-			except:
-				self.sock.close()
-				self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-				self.sock.connect((self.host, self.port))
-			attempts = attempts + 1
-		
-		if (attempts == 3):
-			raise RuntimeError("socket connection broken")
 
 	
 		

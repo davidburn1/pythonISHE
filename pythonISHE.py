@@ -59,7 +59,7 @@ lia.daq.setDouble('/dev4206/oscs/0/freq', 3333)		#set reference frequency
 
 
 # set adc range
-lia.daq.setDouble('/dev4206/sigins/0/range', 0.01) # set input amplifier range to 10 mA
+lia.daq.setDouble('/dev4206/sigins/0/range', 1) # set input amplifier range initially to 1 V
 
 lia.daq.setDouble('/dev4206/demods/0/timeconstant', 0.811410938)
 
@@ -103,9 +103,9 @@ def scan(axis, start, stop, step, detectors):
 		positions = np.arange(start, (stop-0.00001), step)			# 0.1 extra so stop is included		
 			
 	# increment the scan number counter
-	count = np.loadtxt("./scanCounter.dat", dtype="d")
+	count = np.loadtxt("C:\\Users/poms/Documents/scanCounter.dat", dtype="d")
 	count = count + 1
-	np.savetxt("./scanCounter.dat", [count], fmt="%06d")
+	np.savetxt("C:\\Users/poms/Documents/scanCounter.dat", [count], fmt="%06d")
 	
 	# open new scan file
 	print "Starting scan %s #%06d" % (directory, count)
